@@ -20,5 +20,8 @@ export interface MseEngine {
   setSubtitleTrack(index: number): boolean;
   streamInfo(): PipelineStreamInfo | null;
   qualityTiers(): QualityTier[];
+  /** A live stream's seekable window in media time (currentTime units), when
+   *  the engine knows it better than the element; null otherwise. */
+  liveWindow(): { start: number; end: number } | null;
   destroy(): void | Promise<void>;
 }

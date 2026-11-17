@@ -9,7 +9,7 @@ const { pipeline, tracks, osd, playlist, health } = vi.hoisted(() => ({
     isLunaActive: vi.fn(() => false), isLunaPending: vi.fn(() => false), isSourcePending: vi.fn(() => false), isProxyPending: vi.fn(() => false),
     canEscalate: vi.fn(() => false),
     isLunaStarting: vi.fn(() => false), lunaClock: vi.fn(() => null), setLunaDisplay: vi.fn(), lunaStreamUrl: vi.fn(() => ''), escalate: vi.fn(() => false),
-    notePlaying: vi.fn(), isProxied: vi.fn(() => false),
+    notePlaying: vi.fn(), isProxied: vi.fn(() => false), liveWindow: vi.fn(() => null),
   },
   tracks: {
     resetForLoad: vi.fn(), suspend: vi.fn(), stop: vi.fn(), attachVod: vi.fn(),

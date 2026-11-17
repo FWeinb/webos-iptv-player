@@ -86,6 +86,10 @@ export function createHlsEngine(hls: HlsInstance): MseEngine {
     qualityTiers(): QualityTier[] {
       return hlsQualityTiers(hls);
     },
+    liveWindow(): null {
+      // hls.js keeps the element's seekable range accurate
+      return null;
+    },
     destroy(): void {
       hls.destroy();
     },

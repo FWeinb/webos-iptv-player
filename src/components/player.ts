@@ -1824,6 +1824,13 @@ export class Player {
   private liveDvrWindow(): DvrWindow | null {
     const v = this.videoEl;
     if (!v || this.catchupInfo) return null;
+    // Shaka on webOS 4.x reports a finite duration for live streams; its own
+    // seek range is the DVR window there
+    const engineWindow = this.pipeline.liveWindow();
+    if (engineWindow) {
+      const range = { length: 1, start: () => engineWindow.start, end: () => engineWindow.end };
+      return dvrWindow(range, Infinity, CONFIG.PLAYER.DVR_MIN_WINDOW);
+    }
     return dvrWindow(v.seekable, v.duration, CONFIG.PLAYER.DVR_MIN_WINDOW);
   }
 
@@ -2002,6 +2009,10 @@ export class Player {
 
   private reconcileLiveDvrPosition(el: HTMLVideoElement): void {
     if (el !== this.videoEl || el.paused || el.seeking) return;
+    // Shaka keeps playback inside its own seek range, and on load it moves to
+    // the live edge only after the element has reported position 0: clamping
+    // that 0 here would start every DVR stream at its oldest point instead
+    if (this.pipeline.liveWindow()) return;
     const win = this.liveDvrWindow();
     if (!win || el.currentTime >= win.start) return;
     const target = this.oldestDvrTarget(win);

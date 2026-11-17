@@ -435,6 +435,11 @@ export class PlayerPipeline {
     return this.engine?.streamInfo() ?? null;
   }
 
+  /** The MSE engine's live seekable window, when it knows it; see MseEngine. */
+  liveWindow(): { start: number; end: number } | null {
+    return this.engine?.liveWindow() ?? null;
+  }
+
   drmLabel(): string {
     return this.activeDrm;
   }

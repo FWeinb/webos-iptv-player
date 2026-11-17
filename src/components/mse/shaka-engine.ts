@@ -40,6 +40,8 @@ export interface ShakaPlayerLike {
   getVariantTracks(): ShakaVariantTrack[];
   selectAudioTrack(track: ShakaAudioTrack): void;
   selectTextTrack(track?: ShakaTextTrack | null): void;
+  isLive(): boolean;
+  seekRange(): { start: number; end: number };
   destroy(): void | Promise<void>;
 }
 
@@ -151,6 +153,15 @@ export function createShakaEngine(player: ShakaPlayerLike): MseEngine {
     },
     qualityTiers(): QualityTier[] {
       return shakaQualityTiers(player);
+    },
+    // Without MediaSource.setLiveSeekableRange (webOS 4.x, Chromium 53) Shaka
+    // gives a live stream a finite 2^32 duration, so the element's seekable
+    // range is [0, 2^32] and says nothing about the DVR window; Shaka's own
+    // seek range is the window, in the element's media time.
+    liveWindow(): { start: number; end: number } | null {
+      if (!player.isLive()) return null;
+      const { start, end } = player.seekRange();
+      return Number.isFinite(start) && Number.isFinite(end) ? { start, end } : null;
     },
     destroy(): void | Promise<void> {
       return player.destroy();

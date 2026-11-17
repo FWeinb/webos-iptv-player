@@ -2075,6 +2075,27 @@ describe('Player live DVR', () => {
     expect(live.currentTime).toBe(20 + OLDEST_PAD);
   });
 
+  it('leaves the startup position to Shaka when Shaka supplies the window', () => {
+    // webOS 4.x: Shaka gives a live stream a finite duration, so the window
+    // comes from Shaka and the element still reports 0 before Shaka seeks live
+    const { video: v2 } = fakeLiveVideo(0, 0, 0);
+    Object.defineProperty(v2, 'duration', { value: 2 ** 32 });
+    player.init(v2);
+    player.play(0);
+    const pipeline = (player as unknown as {
+      pipeline: { liveWindow(): { start: number; end: number } | null };
+    }).pipeline;
+    vi.spyOn(pipeline, 'liveWindow').mockReturnValue({ start: 1000, end: 3200 });
+
+    v2.dispatchEvent(new Event('progress'));
+    v2.dispatchEvent(new Event('timeupdate'));
+    expect(v2.currentTime).toBe(0);
+
+    expect(player.canSeek()).toBe(true);
+    player.handleAction('fast_forward');
+    expect(v2.currentTime).toBe(3200 - PAD);
+  });
+
   it('re-enters the sliding window when a manifest refresh overtakes playback', () => {
     player.handleAction('rewind');
     expect(live.currentTime).toBe(OLDEST_PAD);
