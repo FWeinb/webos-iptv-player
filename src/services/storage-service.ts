@@ -1050,6 +1050,13 @@ export const StorageService = {
     set('auto_play', val);
   },
 
+  getMergeAudioVariants(): boolean {
+    return get<unknown>('merge_audio_variants', false) === true;
+  },
+  setMergeAudioVariants(val: boolean): void {
+    set('merge_audio_variants', val);
+  },
+
   getLivePreview(): boolean {
     return get<unknown>('live_preview', false) === true;
   },

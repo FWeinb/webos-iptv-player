@@ -9,6 +9,7 @@ import {
   parseAudioRenditions,
   mergeManifestNames,
   mapLunaAudio,
+  variantBaseKey,
 } from './audio-tracks';
 
 const opt = (over: Partial<AudioOption>): AudioOption => ({
@@ -114,6 +115,59 @@ describe('chooseAudioIndex', () => {
     const three = [opt({ index: 0, lang: 'eng', isDefault: true }), opt({ index: 1, lang: 'ger' })];
     expect(chooseAudioIndex(two, { name: '', lang: 'ger' })).toBe(1);
     expect(chooseAudioIndex(three, { name: '', lang: 'de' })).toBe(1);
+  });
+
+  describe('with local-use language variants merged', () => {
+    // xa stands in for a language, qxa for the same language's local-use variant
+    const variants = [
+      opt({ index: 0, lang: 'xa', isDefault: true, channels: 2 }),
+      opt({ index: 1, lang: 'qxa', channels: 6 }),
+      opt({ index: 2, lang: 'l2', channels: 2 }),
+    ];
+
+    it('defaults to the most channels within the default track\'s language', () => {
+      expect(chooseAudioIndex(variants, null, true)).toBe(1);
+      expect(chooseAudioIndex(variants, null)).toBe(0);
+    });
+
+    it('keeps the default when no variant has more channels or a Dolby codec', () => {
+      const even = variants.map(o => ({ ...o, channels: 2 }));
+      expect(chooseAudioIndex(even, null, true)).toBe(0);
+    });
+
+    it('prefers a Dolby variant on a channel tie, since it carries 5.1 when a program has it', () => {
+      const tie = [
+        opt({ index: 0, lang: 'xa', isDefault: true, channels: 2, codec: 'mp4a.40.2' }),
+        opt({ index: 1, lang: 'qxa', channels: 2, codec: 'ac-3' }),
+      ];
+      expect(chooseAudioIndex(tie, null, true)).toBe(1);
+      expect(chooseAudioIndex(tie, null)).toBe(0);
+      const moreChannels = [
+        opt({ index: 0, lang: 'xa', isDefault: true, channels: 6, codec: 'mp4a.40.2' }),
+        opt({ index: 1, lang: 'qxa', channels: 2, codec: 'ec-3' }),
+      ];
+      expect(chooseAudioIndex(moreChannels, null, true)).toBe(0);
+    });
+
+    it('still honors an exact saved pick, stereo included', () => {
+      expect(chooseAudioIndex(variants, { name: '', lang: 'xa' }, true)).toBe(0);
+      expect(chooseAudioIndex(variants, { name: '', lang: 'qxa' }, true)).toBe(1);
+    });
+
+    it('matches a saved language to its variant when the stream lacks the exact code', () => {
+      const onlyVariant = [opt({ index: 0, lang: 'l2', isDefault: true }), opt({ index: 1, lang: 'qxa', channels: 6 })];
+      expect(chooseAudioIndex(onlyVariant, { name: '', lang: 'xa' }, true)).toBe(1);
+      expect(isPrefMatch(onlyVariant[1], { name: '', lang: 'xa' }, true)).toBe(true);
+      expect(chooseAudioIndex(onlyVariant, { name: '', lang: 'xa' })).toBe(0);
+      expect(isPrefMatch(onlyVariant[1], { name: '', lang: 'xa' })).toBe(false);
+    });
+
+    it('folds q plus any two letters, and nothing longer or regional', () => {
+      expect(variantBaseKey('qxa')).toBe('xa');
+      expect(variantBaseKey('qaa')).toBe('aa');
+      expect(variantBaseKey('qxab')).toBe('qxab');
+      expect(variantBaseKey('qx-AB')).toBe('');
+    });
   });
 
   it('prefers an exact language over a folded one and keeps regional codes exact', () => {

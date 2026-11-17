@@ -396,6 +396,8 @@ export const IT_MESSAGES = {
   'settings.httpHeadersHint': 'Per i canali la cui playlist imposta intestazioni HTTP. Servizio multimediale va bene per la maggior parte dei canali; Proxy locale riproduce quelli che il servizio multimediale non riesce a riprodurre, ad esempio quelli protetti da Widevine, ma usa più CPU e memoria. La modifica si applica dalla prossima sintonizzazione.',
   'settings.httpHeadersMediaService': 'Servizio multimediale',
   'settings.httpHeadersLocalProxy': 'Proxy locale',
+  'settings.mergeAudioVariants': 'Unisci le varianti di lingua audio',
+  'settings.mergeAudioVariantsHint': 'Considera una traccia audio contrassegnata da q seguita da un codice lingua, come qde o qen, come quella lingua e riproduce la sua traccia con più canali o, a parità, la sua traccia Dolby, che trasmette il 5.1 quando il programma lo prevede. La traccia scelta da te ha comunque la precedenza. Utile con i provider IPTV che contrassegnano così la traccia surround. La modifica si applica dalla prossima sintonizzazione.',
   'settings.numberEntryOsdTimeout': 'Timeout inserimento numero canale',
   'settings.numberEntryOsdTimeoutHint': 'Riparte dopo ogni cifra. Alla scadenza viene sintonizzato il numero di canale inserito.',
   'settings.playerOsdTimeout': 'Ritardo scomparsa controlli del lettore',

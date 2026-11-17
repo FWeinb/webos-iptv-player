@@ -393,6 +393,8 @@ export const ZH_CN_MESSAGES = {
   'settings.httpHeadersHint': '适用于播放列表设置了 HTTP 请求头的频道。媒体服务适合大多数频道；本地代理可播放媒体服务无法播放的频道（如 Widevine 加密的频道），但会占用更多 CPU 和内存。新设置在下次播放频道时生效。',
   'settings.httpHeadersMediaService': '媒体服务',
   'settings.httpHeadersLocalProxy': '本地代理',
+  'settings.mergeAudioVariants': '合并音轨语言变体',
+  'settings.mergeAudioVariantsHint': '将语言代码前加 q 的音轨（如 qde、qen）视为该语言，并播放其中声道最多的音轨；声道数相同时播放杜比音轨，节目提供 5.1 时即为 5.1 声道。你手动选择的音轨仍然优先。适用于以这种方式标记环绕声音轨的 IPTV 服务商。新设置在下次播放频道时生效。',
   'settings.numberEntryOsdTimeout': '频道号码输入超时',
   'settings.numberEntryOsdTimeoutHint': '每次输入数字后重新计时；超时后切换到已输入的频道号码。',
   'settings.playerOsdTimeout': '播放器控制栏自动隐藏时间',

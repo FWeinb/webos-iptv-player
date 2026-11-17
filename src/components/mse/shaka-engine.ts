@@ -111,6 +111,8 @@ export function createShakaEngine(player: ShakaPlayerLike): MseEngine {
         lang: track.language || '',
         isDefault: track.primary,
         active: track.active,
+        ...(track.channelsCount ? { channels: track.channelsCount } : {}),
+        ...(track.codecs ? { codec: track.codecs } : {}),
       }));
     },
     setAudioTrack(index: number): boolean {

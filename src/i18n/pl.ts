@@ -408,6 +408,8 @@ export const PL_MESSAGES = {
   'settings.httpHeadersHint': 'Dotyczy kanałów, dla których playlista ustawia nagłówki HTTP. Usługa multimedialna sprawdza się w większości kanałów; Lokalny proxy odtwarza te, których ona nie może, np. chronione przez Widevine, ale zużywa więcej mocy procesora i pamięci. Zmiana zacznie obowiązywać przy następnym włączeniu kanału.',
   'settings.httpHeadersMediaService': 'Usługa multimedialna',
   'settings.httpHeadersLocalProxy': 'Lokalny proxy',
+  'settings.mergeAudioVariants': 'Łącz warianty języka dźwięku',
+  'settings.mergeAudioVariantsHint': 'Traktuje ścieżkę dźwiękową oznaczoną literą q i kodem języka, np. qde lub qen, jak ten język i odtwarza jego ścieżkę z największą liczbą kanałów, a przy remisie ścieżkę Dolby, która przenosi 5.1, gdy program je oferuje. Ścieżka wybrana przez Ciebie nadal ma pierwszeństwo. Przydatne u dostawców IPTV, którzy w ten sposób oznaczają ścieżkę przestrzenną. Zmiana zacznie obowiązywać przy następnym włączeniu kanału.',
   'settings.numberEntryOsdTimeout': 'Czas wpisywania numeru kanału',
   'settings.numberEntryOsdTimeoutHint': 'Odliczanie zaczyna się od nowa po każdej cyfrze. Po jego zakończeniu zostanie włączony wpisany kanał.',
   'settings.playerOsdTimeout': 'Czas do ukrycia panelu odtwarzacza',

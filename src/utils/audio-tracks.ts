@@ -35,8 +35,10 @@ export function nativeAudioOptions(list: AudioTrackList): AudioOption[] {
   });
 }
 
-/** Pick a track index for `options`, preferring `pref` (name then language), else the default. */
-export function chooseAudioIndex(options: AudioOption[], pref: AudioPref | null): number {
+/** Pick a track index for `options`, preferring `pref` (name then language), else the default.
+ *  `mergeVariants`: a local-use code q + a language (see variantBaseKey) counts as that
+ *  language, and within the chosen language the most channels win, then a Dolby track. */
+export function chooseAudioIndex(options: AudioOption[], pref: AudioPref | null, mergeVariants = false): number {
   if (!options.length) return -1;
   if (pref) {
     const byName = pref.name && options.find(o => o.name.toLowerCase() === pref.name.toLowerCase());
@@ -44,16 +46,44 @@ export function chooseAudioIndex(options: AudioOption[], pref: AudioPref | null)
     const byLang = pref.lang && (options.find(o => o.lang.toLowerCase() === pref.lang.toLowerCase())
       ?? options.find(o => sameLanguageCode(o.lang, pref.lang)));
     if (byLang) return byLang.index;
+    const byVariant = mergeVariants && pref.lang && surroundPick(options, variantBaseKey(pref.lang));
+    if (byVariant) return byVariant.index;
   }
-  return (options.find(o => o.isDefault) ?? options[0]).index;
+  const fallback = options.find(o => o.isDefault) ?? options[0];
+  return (mergeVariants && surroundPick(options, variantBaseKey(fallback.lang), fallback) || fallback).index;
 }
 
 /** Whether `pref` actually matched `opt` (vs. falling back to the stream default). */
-export function isPrefMatch(opt: AudioOption | undefined, pref: AudioPref | null): boolean {
+export function isPrefMatch(opt: AudioOption | undefined, pref: AudioPref | null, mergeVariants = false): boolean {
   return !!pref && !!opt
     && ((!!pref.name && opt.name.toLowerCase() === pref.name.toLowerCase())
       || (!!pref.lang && (opt.lang.toLowerCase() === pref.lang.toLowerCase()
-        || sameLanguageCode(opt.lang, pref.lang))));
+        || sameLanguageCode(opt.lang, pref.lang)
+        || (mergeVariants && !!variantBaseKey(pref.lang)
+          && variantBaseKey(opt.lang) === variantBaseKey(pref.lang)))));
+}
+
+// ISO 639-2 reserves qaa–qtz for local use; some providers tag another mix of a
+// language (its surround track, say) as q plus that language's 2-letter code.
+export function variantBaseKey(lang: string): string {
+  if (/[-_]/.test(lang)) return '';
+  const key = languageKey(lang);
+  const variant = /^q([a-z]{2})$/.exec(key);
+  return variant ? variant[1] : key;
+}
+
+// Live TV often declares a Dolby track's layout once (stereo) although it
+// carries 5.1 whenever a program has it, so a Dolby codec wins a channel tie.
+const DOLBY_CODEC = /^(ac-3|ec-3|ac-4)/i;
+
+// The track in language `key` with the most channels, then a Dolby codec;
+// `first` wins a full tie.
+function surroundPick(options: AudioOption[], key: string, first?: AudioOption): AudioOption | undefined {
+  if (!key) return undefined;
+  const same = options.filter(o => variantBaseKey(o.lang) === key);
+  if (first) same.sort((a, b) => (a === first ? -1 : b === first ? 1 : 0));
+  const rank = (o: AudioOption) => (o.channels ?? 0) * 2 + (DOLBY_CODEC.test(o.codec ?? '') ? 1 : 0);
+  return same.reduce<AudioOption | undefined>((best, o) => (!best || rank(o) > rank(best) ? o : best), undefined);
 }
 
 // Luna reports ISO 639-2 codes (ger/deu) where a manifest says de; a regional

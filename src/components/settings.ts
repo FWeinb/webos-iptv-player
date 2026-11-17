@@ -807,6 +807,7 @@ export class Settings {
     const localePreference = StorageService.getLocalePreference();
     const liveReconnectAttempts = StorageService.getLiveReconnectAttempts();
     const headerPlayback = StorageService.getHeaderPlayback();
+    const mergeAudioVariants = StorageService.getMergeAudioVariants();
     const numberEntryOsdTimeoutMs = StorageService.getNumberEntryOsdTimeoutMs();
     const playerOsdTimeoutMs = StorageService.getPlayerOsdTimeoutMs();
     const animationMode = StorageService.getAnimationMode();
@@ -1139,6 +1140,16 @@ export class Settings {
                       { value: 'luna', label: t('settings.httpHeadersMediaService') },
                       { value: 'proxy', label: t('settings.httpHeadersLocalProxy') },
                     ], headerPlayback)}
+                    </div>
+                  </div>
+                  <div class="settings-advanced-row">
+                    <div class="settings-advanced-group" aria-hidden="true"></div>
+                    <div class="settings-advanced-description">
+                      <div class="settings-item-title">${t('settings.mergeAudioVariants')}</div>
+                      <div class="settings-item-hint">${t('settings.mergeAudioVariantsHint')}</div>
+                    </div>
+                    <div class="settings-advanced-control">
+                    ${toggleGroup('merge-audio-variants', [{ value: 'on', label: t('settings.on') }, { value: 'off', label: t('settings.off') }], mergeAudioVariants ? 'on' : 'off')}
                     </div>
                   </div>
                   <div class="settings-advanced-row">
@@ -2933,6 +2944,9 @@ export class Settings {
     if (headerPlayback === 'off' || headerPlayback === 'luna' || headerPlayback === 'proxy') {
       StorageService.setHeaderPlayback(headerPlayback);
     }
+
+    const mergeAudioVariants = $('#merge-audio-variants .toggle-option.active', this.container)?.dataset.value;
+    if (mergeAudioVariants) StorageService.setMergeAudioVariants(mergeAudioVariants === 'on');
 
     const numberEntryOsdTimeoutMs = Number(
       ($('#number-entry-osd-timeout', this.container) as HTMLElement | null)?.dataset.value,

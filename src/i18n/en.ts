@@ -400,6 +400,8 @@ export const EN_MESSAGES = {
   'settings.httpHeadersHint': 'For channels whose playlist sets HTTP headers. Media service suits most channels; Local proxy plays those it can\'t, such as Widevine-protected ones, but uses more CPU and memory. Applies from the next tune.',
   'settings.httpHeadersMediaService': 'Media service',
   'settings.httpHeadersLocalProxy': 'Local proxy',
+  'settings.mergeAudioVariants': 'Merge audio language variants',
+  'settings.mergeAudioVariantsHint': 'Treats an audio track tagged q plus a language code, such as qde or qen, as that language, and plays its track with the most channels or, on a tie, its Dolby track, which carries 5.1 when a program has it. A track you picked yourself still wins. Useful for IPTV providers that tag their surround track this way. Applies from the next tune.',
   'settings.numberEntryOsdTimeout': 'Number Entry OSD timeout',
   'settings.numberEntryOsdTimeoutHint': 'Restarts after each digit. When it expires, the entered channel number is tuned.',
   'settings.playerOsdTimeout': 'Player OSD auto-hide delay',

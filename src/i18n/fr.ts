@@ -398,6 +398,8 @@ export const FR_MESSAGES = {
   'settings.httpHeadersHint': 'Pour les chaînes dont la liste de lecture définit des en-têtes HTTP. Service multimédia convient à la plupart des chaînes ; Proxy local lit celles que le service multimédia ne peut pas lire, comme les chaînes protégées par Widevine, mais consomme davantage de processeur et de mémoire. Le réglage s’applique à la prochaine sélection de chaîne.',
   'settings.httpHeadersMediaService': 'Service multimédia',
   'settings.httpHeadersLocalProxy': 'Proxy local',
+  'settings.mergeAudioVariants': 'Fusionner les variantes de langue audio',
+  'settings.mergeAudioVariantsHint': 'Traite une piste audio marquée q suivi d’un code de langue, comme qde ou qen, comme cette langue, et lit sa piste comportant le plus de canaux ou, en cas d’égalité, sa piste Dolby, qui transmet le 5.1 quand le programme le propose. La piste que vous avez choisie reste prioritaire. Utile avec les fournisseurs IPTV qui marquent ainsi leur piste surround. Le réglage s’applique à la prochaine sélection de chaîne.',
   'settings.numberEntryOsdTimeout': 'Délai de saisie du numéro de chaîne',
   'settings.numberEntryOsdTimeoutHint': 'Redémarre après chaque chiffre. À expiration, le numéro de chaîne saisi est sélectionné.',
   'settings.playerOsdTimeout': 'Délai de masquage des commandes du lecteur',

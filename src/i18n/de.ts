@@ -398,6 +398,8 @@ export const DE_MESSAGES = {
   'settings.httpHeadersHint': 'Für Sender, deren Wiedergabeliste HTTP-Header festlegt. Mediendienst eignet sich für die meisten Sender; Lokaler Proxy spielt auch Sender ab, die der Mediendienst nicht abspielen kann, etwa mit Widevine geschützte, benötigt aber mehr CPU und Arbeitsspeicher. Die Änderung gilt ab dem nächsten Senderaufruf.',
   'settings.httpHeadersMediaService': 'Mediendienst',
   'settings.httpHeadersLocalProxy': 'Lokaler Proxy',
+  'settings.mergeAudioVariants': 'Audio-Sprachvarianten zusammenführen',
+  'settings.mergeAudioVariantsHint': 'Behandelt eine Audiospur mit q vor dem Sprachcode, etwa qde oder qen, als diese Sprache und spielt deren Audiospur mit den meisten Kanälen oder, bei Gleichstand, deren Dolby-Spur, die 5.1 überträgt, wenn eine Sendung es bietet. Eine selbst gewählte Audiospur hat Vorrang. Nützlich bei IPTV-Anbietern, die ihre Surround-Spur so kennzeichnen. Die Änderung gilt ab dem nächsten Senderaufruf.',
   'settings.numberEntryOsdTimeout': 'Zeitlimit für die Sendernummerneingabe',
   'settings.numberEntryOsdTimeoutHint': 'Beginnt nach jeder Ziffer neu. Nach Ablauf wird zur eingegebenen Sendernummer gewechselt.',
   'settings.playerOsdTimeout': 'Ausblendverzögerung der Player-Steuerung',

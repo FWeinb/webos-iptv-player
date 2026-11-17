@@ -398,6 +398,8 @@ export const PT_BR_MESSAGES = {
   'settings.httpHeadersHint': 'Para canais cuja lista de reprodução define cabeçalhos HTTP. Serviço de mídia atende à maioria dos canais; Proxy local reproduz os que o Serviço de mídia não consegue, como os protegidos por Widevine, mas usa mais CPU e memória. A alteração vale a partir da próxima sintonia.',
   'settings.httpHeadersMediaService': 'Serviço de mídia',
   'settings.httpHeadersLocalProxy': 'Proxy local',
+  'settings.mergeAudioVariants': 'Unir variantes de idioma do áudio',
+  'settings.mergeAudioVariantsHint': 'Trata uma faixa de áudio marcada com q mais um código de idioma, como qde ou qen, como esse idioma e reproduz a faixa dele com mais canais ou, em caso de empate, a faixa Dolby, que transmite 5.1 quando o programa oferece. A faixa que você escolheu continua tendo prioridade. Útil com provedores de IPTV que marcam assim a faixa surround. A alteração vale a partir da próxima sintonia.',
   'settings.numberEntryOsdTimeout': 'Tempo limite para inserir o canal',
   'settings.numberEntryOsdTimeoutHint': 'Reinicia após cada dígito. Ao terminar, sintoniza o número de canal inserido.',
   'settings.playerOsdTimeout': 'Atraso para ocultar os controles',

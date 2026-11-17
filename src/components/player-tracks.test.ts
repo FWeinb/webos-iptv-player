@@ -29,6 +29,7 @@ const { subtitleSearchServiceMock } = vi.hoisted(() => {
 vi.mock('../services/storage-service', () => ({
   StorageService: {
     getAudioPref: vi.fn(() => null),
+    getMergeAudioVariants: vi.fn(() => false),
     setAudioPref: vi.fn(),
     getSubtitlePref: vi.fn(() => null),
     setSubtitlePref: vi.fn(),
@@ -170,6 +171,32 @@ describe('PlayerTracks', () => {
     const options = tracks.getAudioTracks();
     expect(options.map((item) => item.active)).toEqual([true, false, false]);
     expect(options[2].available).toBe(false); // collapsed alternate grayed out
+  });
+
+  it('picks the most channels among merged language variants when the setting is on', () => {
+    const setMseAudioTrack = vi.fn(() => true);
+    const options = [
+      { index: 0, name: '', lang: 'xa', isDefault: true, active: true, channels: 2 },
+      { index: 1, name: '', lang: 'qxa', isDefault: false, active: false, channels: 6 },
+    ];
+    const mse = new PlayerTracks(pipeline({
+      isMseActive: () => true,
+      mseAudioOptions: () => options,
+      setMseAudioTrack,
+    }), {
+      getVideoElement: () => video,
+      getChannel: () => channel,
+      getVod: () => vod,
+      playbackLabel: () => 'session=1 load=7',
+    });
+
+    mse.applyHlsAudioSelection();
+    expect(setMseAudioTrack).toHaveBeenLastCalledWith(0);
+
+    vi.mocked(StorageService.getMergeAudioVariants).mockReturnValue(true);
+    mse.applyHlsAudioSelection();
+    expect(setMseAudioTrack).toHaveBeenLastCalledWith(1);
+    vi.mocked(StorageService.getMergeAudioVariants).mockReturnValue(false);
   });
 
   it('switches a native audio track and persists the live preference keys', () => {

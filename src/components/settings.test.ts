@@ -47,6 +47,7 @@ const {
     liveReconnectAttempts: 3,
     headerPlayback: 'luna' as 'off' | 'luna' | 'proxy',
     videoQuality: 'auto' as VideoQuality,
+    mergeAudioVariants: false,
     numberEntryOsdTimeoutMs: 1200,
     playerOsdTimeoutMs: 5000,
     playlistRefreshHours: 6,
@@ -103,6 +104,7 @@ const {
       getLiveReconnectAttempts: vi.fn(() => state.liveReconnectAttempts),
       getHeaderPlayback: vi.fn(() => state.headerPlayback),
       getVideoQuality: vi.fn(() => state.videoQuality),
+      getMergeAudioVariants: vi.fn(() => state.mergeAudioVariants),
       getNumberEntryOsdTimeoutMs: vi.fn(() => state.numberEntryOsdTimeoutMs),
       getPlayerOsdTimeoutMs: vi.fn(() => state.playerOsdTimeoutMs),
       getPlaylistRefreshIntervalHours: vi.fn(() => state.playlistRefreshHours),
@@ -140,6 +142,7 @@ const {
       setChannelCycleMode: vi.fn((m: ChannelCycleMode) => { state.channelCycleMode = m; }),
       setHeaderPlayback: vi.fn((mode: 'off' | 'luna' | 'proxy') => { state.headerPlayback = mode; }),
       setVideoQuality: vi.fn((quality: VideoQuality) => { state.videoQuality = quality; }),
+      setMergeAudioVariants: vi.fn((on: boolean) => { state.mergeAudioVariants = on; }),
       setLiveReconnectAttempts: vi.fn((attempts: number) => {
         state.liveReconnectAttempts = attempts;
       }),
@@ -560,7 +563,7 @@ describe('Settings.render', () => {
     const advanced = container.querySelector('#settings-advanced')!;
     expect(advanced.querySelector('.settings-section-title')?.textContent).toBe('Advanced');
     const items = advanced.querySelectorAll('.settings-advanced-row');
-    expect(items).toHaveLength(7);
+    expect(items).toHaveLength(8);
     expect(Array.from(advanced.querySelectorAll('.settings-advanced-group'))
       .map(group => group.textContent?.trim())
       .filter(Boolean))
@@ -591,6 +594,8 @@ describe('Settings.render', () => {
     )).map(option => option.textContent))
       .toEqual(['Off', 'Media service', 'Local proxy']);
     expect(items[3].querySelector('.settings-item-title')?.textContent)
+      .toBe('Merge audio language variants');
+    expect(items[4].querySelector('.settings-item-title')?.textContent)
       .toBe('Number Entry OSD timeout');
     expect(container.querySelector('#number-entry-osd-timeout')?.getAttribute('data-value'))
       .toBe('1200');
@@ -598,7 +603,7 @@ describe('Settings.render', () => {
       '#number-entry-osd-timeout [data-dropdown-value]',
     )).map(option => option.textContent))
       .toEqual(['1.2 seconds', '1.8 seconds', '2.5 seconds', '3 seconds', '3.5 seconds']);
-    expect(items[4].querySelector('.settings-item-title')?.textContent)
+    expect(items[5].querySelector('.settings-item-title')?.textContent)
       .toBe('Player OSD auto-hide delay');
     expect(container.querySelector('#player-osd-timeout')?.getAttribute('data-value'))
       .toBe('5000');
@@ -633,7 +638,7 @@ describe('Settings.render', () => {
     settings.render();
 
     expect(container.querySelectorAll('#settings-advanced .settings-advanced-row'))
-      .toHaveLength(8);
+      .toHaveLength(9);
     expect(container.querySelector('#xtream-catalog-refresh-interval')
       ?.getAttribute('data-value')).toBe('6');
     expect(Array.from(container.querySelectorAll<HTMLElement>(
@@ -1788,6 +1793,18 @@ describe('Settings.save', () => {
 
     expect(storageMock.setHeaderPlayback).toHaveBeenLastCalledWith('proxy');
     expect(state.headerPlayback).toBe('proxy');
+  });
+
+  it('saves merging audio language variants, off by default', () => {
+    settings.render();
+    const option = (value: string) => container.querySelector<HTMLButtonElement>(`#merge-audio-variants [data-value="${value}"]`)!;
+    expect(option('off').classList.contains('active')).toBe(true);
+
+    click('#merge-audio-variants [data-value="on"]');
+    click('#save-settings');
+
+    expect(storageMock.setMergeAudioVariants).toHaveBeenCalledWith(true);
+    expect(state.mergeAudioVariants).toBe(true);
   });
 
   it('saves playlist and guide refresh intervals without forcing a data reload', () => {

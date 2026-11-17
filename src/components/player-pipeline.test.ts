@@ -849,8 +849,8 @@ describe('PlayerPipeline desktop DASH', () => {
     const player = lastShakaPlayer();
 
     expect(pipeline.mseAudioOptions()).toEqual([
-      { index: 0, name: 'Track 1', lang: 'l1', isDefault: true, active: false },
-      { index: 1, name: '', lang: 'l2', isDefault: false, active: true },
+      { index: 0, name: 'Track 1', lang: 'l1', isDefault: true, active: false, channels: 2, codec: 'mp4a.40.2' },
+      { index: 1, name: '', lang: 'l2', isDefault: false, active: true, channels: 6, codec: 'ec-3' },
     ]);
     expect(pipeline.setMseAudioTrack(0)).toBe(true);
     expect(player?.selectAudioTrack).toHaveBeenCalledWith(player?.audioTracks[0]);

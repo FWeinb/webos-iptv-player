@@ -566,8 +566,9 @@ export class PlayerTracks {
     // Names paired by position are display-only: a wrong guess must not switch.
     const paired = naming !== 'order';
     const keyedPref = pref && paired ? { name: pref.name, lang: languageKey(pref.lang) } : null;
-    const index = chooseAudioIndex(keyed, keyedPref);
-    const matched = isPrefMatch(keyed.find(option => option.index === index), keyedPref);
+    const merge = StorageService.getMergeAudioVariants();
+    const index = chooseAudioIndex(keyed, keyedPref, merge);
+    const matched = isPrefMatch(keyed.find(option => option.index === index), keyedPref, merge);
     const pick = !pref ? 'none' : !paired ? 'unpaired' : matched ? 'saved' : 'missed';
     this.logAudioChoice('luna', options, pref, index);
     log.info('Luna audio tracks', 'event=audio.luna.tracks', this.options.playbackLabel(),
@@ -615,7 +616,7 @@ export class PlayerTracks {
     log.info(`audio: ${path} | tracks:`, options.length,
       '| storage pref:', pref ? (pref.name || pref.lang || '(unnamed)') : 'none',
       '| using:', index, label,
-      isPrefMatch(option, pref) ? '(saved pref)' : '(stream default)');
+      isPrefMatch(option, pref, StorageService.getMergeAudioVariants()) ? '(saved pref)' : '(stream default)');
   }
 
   // Re-apply the remembered choice on tune-in; with no saved pick the stream
@@ -625,7 +626,7 @@ export class PlayerTracks {
     const options = this.audioOptions();
     if (options.length < 2) return;
     const pref = StorageService.getAudioPref(this.preferenceKey());
-    const index = chooseAudioIndex(options, pref);
+    const index = chooseAudioIndex(options, pref, StorageService.getMergeAudioVariants());
     this.logAudioChoice('hls', options, pref, index);
     if (index >= 0) this.pipeline.setMseAudioTrack(index);
   }
@@ -637,7 +638,7 @@ export class PlayerTracks {
     if (!list || list.length < 2) return;
     const options = this.audioOptions();
     const pref = StorageService.getAudioPref(this.preferenceKey());
-    const index = chooseAudioIndex(options, pref);
+    const index = chooseAudioIndex(options, pref, StorageService.getMergeAudioVariants());
     this.logAudioChoice('native', options, pref, index);
     if (index < 0 || list[index].enabled) return; // already active — don't disturb playback
     for (let i = 0; i < list.length; i++) list[i].enabled = (i === index);

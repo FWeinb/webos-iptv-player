@@ -434,6 +434,9 @@ export interface AudioOption {
   lang: string;
   isDefault: boolean;
   active: boolean;
+  /** Audio channel count and codec, where the engine reports them (Shaka). */
+  channels?: number;
+  codec?: string;
 }
 
 /** A remembered audio-track choice, matched against future streams by name then language. */

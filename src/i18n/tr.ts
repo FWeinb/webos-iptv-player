@@ -393,6 +393,8 @@ export const TR_MESSAGES = {
   'settings.httpHeadersHint': 'Oynatma listesinde HTTP başlıkları tanımlanan kanallar için. Medya hizmeti çoğu kanala uygundur; Yerel proxy, Medya hizmetinin oynatamadığı Widevine korumalı kanallar gibi kanalları oynatır ancak daha fazla CPU ve bellek kullanır. Sonraki kanal açılışında uygulanır.',
   'settings.httpHeadersMediaService': 'Medya hizmeti',
   'settings.httpHeadersLocalProxy': 'Yerel proxy',
+  'settings.mergeAudioVariants': 'Ses dili varyantlarını birleştir',
+  'settings.mergeAudioVariantsHint': 'q ve bir dil kodu ile etiketlenen ses parçasını, örneğin qde veya qen, o dil olarak kabul eder ve o dilin en çok kanala sahip parçasını, eşitlik durumunda ise program sunduğunda 5.1 taşıyan Dolby parçasını oynatır. Kendi seçtiğiniz parça yine önceliklidir. Surround parçasını bu şekilde etiketleyen IPTV sağlayıcıları için kullanışlıdır. Sonraki kanal açılışında uygulanır.',
   'settings.numberEntryOsdTimeout': 'Kanal numarası giriş süresi',
   'settings.numberEntryOsdTimeoutHint': 'Her rakamda süre yeniden başlar. Süre dolunca girilen kanal açılır.',
   'settings.playerOsdTimeout': 'Oynatıcı göstergesi gizlenme süresi',
