@@ -118,6 +118,9 @@ export class Player {
   private vodTracksLatePending = false;
   private pendingResumeSecs = 0;
   private pendingSeekTarget: number | null = null;
+  // A native live DVR stream may open at its window start (a time-shifted
+  // stream that reaches back to the program start); live starts at the edge
+  private liveEdgeStartPending = false;
   // Left/Right presses move this target; the seek itself is applied once the
   // presses stop (or on OK), so a long jump costs one native seek, not many.
   private scrub: { target: number; dir: 1 | -1; since: number } | null = null;
@@ -958,6 +961,7 @@ export class Player {
     if (scope !== undefined) this.currentScope = scope;
     this.catchupInfo = catchup || null;
     this.liveSessionActive = !catchup;
+    this.liveEdgeStartPending = !catchup && this.pendingResumeSecs <= 0;
     this.livePlaybackStatus = 'loading';
     this.onTvPlaybackChanged(channelIndex, catchup ? catchup.start * 1000 : null);
     this.catchupSourceIndex = 0;
@@ -1958,6 +1962,7 @@ export class Player {
     const v = this.videoEl;
     if (!v) return null;
     this.dropScrub();
+    this.liveEdgeStartPending = false;
     const win = this.liveDvrWindow();
     if (win) {
       // Live DVR: seeking near the end snaps to the live edge (a small pad back
@@ -2014,7 +2019,18 @@ export class Player {
     // that 0 here would start every DVR stream at its oldest point instead
     if (this.pipeline.liveWindow()) return;
     const win = this.liveDvrWindow();
-    if (!win || el.currentTime >= win.start) return;
+    if (!win) return;
+    if (this.liveEdgeStartPending) {
+      this.liveEdgeStartPending = false;
+      const behind = win.end - el.currentTime;
+      if (behind > CONFIG.PLAYER.DVR_LIVE_EDGE) {
+        log.info('Live DVR opened behind the live edge', 'event=dvr.start.live', `behind=${Math.round(behind)}`);
+        this.pendingSeekTarget = win.end - CONFIG.PLAYER.DVR_GO_LIVE_PAD;
+        el.currentTime = this.pendingSeekTarget;
+        return;
+      }
+    }
+    if (el.currentTime >= win.start) return;
     const target = this.oldestDvrTarget(win);
     this.pendingSeekTarget = target;
     el.currentTime = target;

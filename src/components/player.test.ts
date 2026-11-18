@@ -2075,6 +2075,32 @@ describe('Player live DVR', () => {
     expect(live.currentTime).toBe(20 + OLDEST_PAD);
   });
 
+  it('starts a native DVR stream that opens at its window start at the live edge', () => {
+    const info = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const { video: v2 } = fakeLiveVideo(0, 3600, 0); // time-shifted from the program start
+    player.init(v2);
+    player.play(0);
+
+    v2.dispatchEvent(new Event('timeupdate'));
+    expect(v2.currentTime).toBe(3600 - PAD);
+    expect(info.mock.calls.map(call => call.join(' ')).filter(line => line.includes('event=dvr.start.live')))
+      .toEqual(['[Player] Live DVR opened behind the live edge event=dvr.start.live behind=3600']);
+
+    // only at startup: a later rewind stays where the user put it
+    player.handleAction('rewind');
+    v2.dispatchEvent(new Event('timeupdate'));
+    expect(v2.currentTime).toBe(OLDEST_PAD);
+    info.mockRestore();
+  });
+
+  it('leaves a live DVR stream that opens near its live edge where it is', () => {
+    const { video: v2 } = fakeLiveVideo(0, 3600, 3595);
+    player.init(v2);
+    player.play(0);
+    v2.dispatchEvent(new Event('timeupdate'));
+    expect(v2.currentTime).toBe(3595);
+  });
+
   it('leaves the startup position to Shaka when Shaka supplies the window', () => {
     // webOS 4.x: Shaka gives a live stream a finite duration, so the window
     // comes from Shaka and the element still reports 0 before Shaka seeks live

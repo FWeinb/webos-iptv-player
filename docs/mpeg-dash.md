@@ -156,8 +156,10 @@ and platform.
 
 ## Live playback and DVR
 
-Dynamic MPDs use the native seekable window. DVR seeks stay inside both moving
-boundaries:
+Dynamic MPDs use the native seekable window. A live channel that opens more
+than `DVR_LIVE_EDGE` seconds behind the window end, such as a time-shifted
+stream that reaches back to the program start, moves to the live edge once on
+startup. DVR seeks stay inside both moving boundaries:
 
 - Go-to-Live seeks slightly behind `seekable.end`, where media is ready.
 - Rewind stays inside `seekable.start` so the next MPD refresh does not move the
