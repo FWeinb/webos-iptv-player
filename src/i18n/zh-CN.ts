@@ -399,6 +399,8 @@ export const ZH_CN_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': '每次输入数字后重新计时；超时后切换到已输入的频道号码。',
   'settings.playerOsdTimeout': '播放器控制栏自动隐藏时间',
   'settings.playerOsdTimeoutHint': '播放期间无操作达到此时长后自动隐藏；暂停时保持显示。',
+  'settings.pointerEdgeDelay': '指针边缘停留时间',
+  'settings.pointerEdgeDelayHint': '播放时，指针需在屏幕左侧或右侧边缘停留多久，才会打开频道列表或菜单。关闭时立即打开。',
   'settings.durationSeconds': {
     other: '{seconds} 秒',
   },

@@ -414,6 +414,8 @@ export const RU_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Отсчёт начинается заново после каждой цифры. По истечении времени включается введённый номер канала.',
   'settings.playerOsdTimeout': 'Задержка скрытия панели управления',
   'settings.playerOsdTimeoutHint': 'Автоматически скрывается после этого периода без действий. При паузе остаётся видимой.',
+  'settings.pointerEdgeDelay': 'Задержка указателя у края экрана',
+  'settings.pointerEdgeDelayHint': 'Во время воспроизведения: сколько указатель должен находиться у левого или правого края, прежде чем откроется список каналов или меню. При отключении они открываются сразу.',
   'settings.durationSeconds': {
     one: '{seconds} секунда',
     few: '{seconds} секунды',

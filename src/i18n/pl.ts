@@ -414,6 +414,8 @@ export const PL_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Odliczanie zaczyna się od nowa po każdej cyfrze. Po jego zakończeniu zostanie włączony wpisany kanał.',
   'settings.playerOsdTimeout': 'Czas do ukrycia panelu odtwarzacza',
   'settings.playerOsdTimeoutHint': 'Panel znika po tym czasie bezczynności. Pozostaje widoczny podczas pauzy.',
+  'settings.pointerEdgeDelay': 'Opóźnienie wskaźnika przy krawędzi',
+  'settings.pointerEdgeDelayHint': 'Podczas odtwarzania określa, jak długo wskaźnik musi pozostać przy lewej lub prawej krawędzi, zanim otworzy się lista kanałów lub menu. Wył. otwiera je od razu.',
   'settings.durationSeconds': {
     one: '{seconds} sekunda',
     few: '{seconds} sekundy',

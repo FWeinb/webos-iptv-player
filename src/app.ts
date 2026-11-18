@@ -51,6 +51,7 @@ import { truncate } from './utils/text';
 import { $, show, hide, afterNextPaint } from './utils/dom';
 import { createLogger, installGlobalErrorHandlers, logEnvironment } from './utils/logger';
 import { FocusRing } from './navigation/focus-ring';
+import { InputMode } from './navigation/input-mode';
 import { Focus, type FocusScope } from './navigation/focus-scope';
 import type {
   Action,
@@ -84,6 +85,8 @@ class App {
   private parentalControls!: ParentalControls;
   private parentalPinPrompt = new ParentalPinPrompt();
   private sidebar!: Sidebar;
+  private edgePointer: { clientX: number; clientY: number; target: Element | null } | null = null;
+  private edgeDwell: { side: 'left' | 'right'; timer: ReturnType<typeof setTimeout> | null } | null = null;
   private menu!: PlayerMenu;
   private reminderPrompt = new ReminderPrompt();
   private reminderManager!: ReminderManager;
@@ -1909,58 +1912,110 @@ class App {
     document.addEventListener('nav:pointermove', (event: Event) => {
       const e = (event as CustomEvent<{ clientX: number; clientY: number }>).detail;
       const target = event.target instanceof Element ? event.target : null;
-      const currentView = this.viewStack[this.viewStack.length - 1];
-      if (currentView !== 'player') return;
-
-      const osd = $('#player-osd', this.views.player);
-      const osdRect = osd?.getBoundingClientRect();
-      const overOsd = !!osd && !osd.classList.contains('hidden') && !!osdRect
-        && e.clientY >= osdRect.top;
-
-      // VOD (movies/series) has no channels and no live menu — only the OSD
-      // (title + seek bar) is pointer-revealable; suppress the channel sidebar
-      // and the live player menu.
-      const vod = this.player.isVod();
-      // A modal over the player, such as the subtitle sync adjuster, keeps
-      // the edge panels shut.
-      const modal = !!Focus.owner()?.modal;
-
-      // Protect the full-width area beside and below the OSD too: its edge
-      // controls sit next to margins where an imprecise cursor can open a panel.
-      const overTabs = !!target?.closest('.player-sidebar .sidebar-tabs');
-      if (!overOsd && !vod && !modal && e.clientX < 80 && !this.menu.visible) {
-        this.sidebar.show();
-        this.sidebar.handlePointerMove(e.clientX, false, overTabs);
-      } else if (this.sidebar.visible) {
-        const overSidebar = !!target?.closest('.player-sidebar');
-        const delayingDismiss = this.sidebar.handlePointerMove(e.clientX, overSidebar, overTabs);
-        if (!delayingDismiss && !overSidebar
-            && e.clientX > this.sidebar.pointerDismissX && !this.sidebar.keyboardOn) {
-          // Never dismiss while the keyboard is on — the pointer naturally
-          // leaves the sidebar on its way to the on-screen keyboard.
-          this.sidebar.hide();
-        }
-      }
-
-      // Right menu. Live/catch-up and VOD alike; for VOD it shows the VOD action
-      // set (Info, Settings) plus any audio/subtitle tracks — the channel rows
-      // are hidden, so it's never empty.
-      if (!overOsd && !modal && e.clientX > 1840 && !this.sidebar.visible) {
-        this.menu.show();
-      } else if (this.menu.visible) {
-        const overMenu = !!target?.closest('.player-menu');
-        if (overMenu) {
-          this.menu.resetTimer();
-        } else if (e.clientX < 1540) {
-          this.menu.hide();
-        }
-      }
-
-      // Bottom OSD info bar
-      if (e.clientY > 900 && !this.sidebar.visible && !this.menu.visible) {
-        this.player.showOSD();
-      }
+      this.edgePointer = { clientX: e.clientX, clientY: e.clientY, target };
+      this.onPlayerPointer(this.edgePointer);
     });
+    // The D-pad taking over, the cursor going away, or the app going to the
+    // background cancels a panel the pointer was about to open.
+    InputMode.onChange((mode) => {
+      if (mode === 'keys') this.clearEdgeDwell();
+    });
+    InputMode.onPointerGone(() => this.clearEdgeDwell());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.clearEdgeDwell();
+    });
+  }
+
+  private onPlayerPointer(e: { clientX: number; clientY: number; target: Element | null }): void {
+    const target = e.target;
+    const currentView = this.viewStack[this.viewStack.length - 1];
+    if (currentView !== 'player') {
+      this.clearEdgeDwell();
+      return;
+    }
+
+    const osd = $('#player-osd', this.views.player);
+    const osdRect = osd?.getBoundingClientRect();
+    const overOsd = !!osd && !osd.classList.contains('hidden') && !!osdRect
+      && e.clientY >= osdRect.top;
+
+    // VOD (movies/series) has no channels and no live menu — only the OSD
+    // (title + seek bar) is pointer-revealable; suppress the channel sidebar
+    // and the live player menu.
+    const vod = this.player.isVod();
+    // A modal over the player, such as the subtitle sync adjuster, keeps
+    // the edge panels shut.
+    const modal = !!Focus.owner()?.modal;
+
+    // Protect the full-width area beside and below the OSD too: its edge
+    // controls sit next to margins where an imprecise cursor can open a panel.
+    const overTabs = !!target?.closest('.player-sidebar .sidebar-tabs');
+    const atLeft = !overOsd && !vod && !modal && e.clientX < 80 && !this.menu.visible;
+    const atRight = !overOsd && !modal && e.clientX > 1840 && !this.sidebar.visible;
+    const edgeReady = this.edgeDwellReady(atLeft ? 'left' : atRight ? 'right' : null);
+    if (atLeft && edgeReady) {
+      // The next open waits again, however this panel closes
+      this.clearEdgeDwell();
+      this.sidebar.show();
+      this.sidebar.handlePointerMove(e.clientX, false, overTabs);
+    } else if (this.sidebar.visible) {
+      const overSidebar = !!target?.closest('.player-sidebar');
+      const delayingDismiss = this.sidebar.handlePointerMove(e.clientX, overSidebar, overTabs);
+      if (!delayingDismiss && !overSidebar
+          && e.clientX > this.sidebar.pointerDismissX && !this.sidebar.keyboardOn) {
+        // Never dismiss while the keyboard is on — the pointer naturally
+        // leaves the sidebar on its way to the on-screen keyboard.
+        this.sidebar.hide();
+      }
+    }
+
+    // Right menu. Live/catch-up and VOD alike; for VOD it shows the VOD action
+    // set (Info, Settings) plus any audio/subtitle tracks — the channel rows
+    // are hidden, so it's never empty.
+    if (atRight && edgeReady) {
+      this.clearEdgeDwell();
+      this.menu.show();
+    } else if (this.menu.visible) {
+      const overMenu = !!target?.closest('.player-menu');
+      if (overMenu) {
+        this.menu.resetTimer();
+      } else if (e.clientX < 1540) {
+        this.menu.hide();
+      }
+    }
+
+    // Bottom OSD info bar
+    if (e.clientY > 900 && !this.sidebar.visible && !this.menu.visible) {
+      this.player.showOSD();
+    }
+  }
+
+  // With a pointer edge delay set, a panel opens only once the pointer has
+  // rested in its edge zone that long; true when the panel may open now.
+  private edgeDwellReady(side: 'left' | 'right' | null): boolean {
+    const open = side === 'left' ? this.sidebar.visible : side === 'right' && this.menu.visible;
+    if (side === null || open) {
+      this.clearEdgeDwell();
+      return true;
+    }
+    const delay = StorageService.getPointerEdgeDelayMs();
+    if (delay <= 0) return true;
+    if (this.edgeDwell?.side === side) return this.edgeDwell.timer === null;
+    this.clearEdgeDwell();
+    const dwell: { side: 'left' | 'right'; timer: ReturnType<typeof setTimeout> | null } = {
+      side,
+      timer: setTimeout(() => {
+        dwell.timer = null;
+        if (this.edgePointer) this.onPlayerPointer(this.edgePointer);
+      }, delay),
+    };
+    this.edgeDwell = dwell;
+    return false;
+  }
+
+  private clearEdgeDwell(): void {
+    if (this.edgeDwell?.timer) clearTimeout(this.edgeDwell.timer);
+    this.edgeDwell = null;
   }
 
   private onMenuAction(action: Action): void {

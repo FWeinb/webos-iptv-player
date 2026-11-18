@@ -399,6 +399,8 @@ export const TR_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Her rakamda süre yeniden başlar. Süre dolunca girilen kanal açılır.',
   'settings.playerOsdTimeout': 'Oynatıcı göstergesi gizlenme süresi',
   'settings.playerOsdTimeoutHint': 'Giriş olmadığında bu süre sonunda gizlenir. Oynatma duraklatıldığında görünür kalır.',
+  'settings.pointerEdgeDelay': 'Kenarda işaretçi gecikmesi',
+  'settings.pointerEdgeDelayHint': 'Oynatma sırasında kanal listesi veya menünün açılması için işaretçinin sol ya da sağ kenarda ne kadar beklemesi gerektiğini belirler. Kapalıyken hemen açılır.',
   'settings.durationSeconds': {
     other: '{seconds} saniye',
   },

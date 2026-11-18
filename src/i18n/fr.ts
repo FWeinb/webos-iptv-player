@@ -404,6 +404,8 @@ export const FR_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Redémarre après chaque chiffre. À expiration, le numéro de chaîne saisi est sélectionné.',
   'settings.playerOsdTimeout': 'Délai de masquage des commandes du lecteur',
   'settings.playerOsdTimeoutHint': 'Se masquent automatiquement après cette durée sans action. Restent visibles lorsque la lecture est en pause.',
+  'settings.pointerEdgeDelay': 'Délai du pointeur en bord d’écran',
+  'settings.pointerEdgeDelayHint': 'Pendant la lecture, durée pendant laquelle le pointeur doit rester sur le bord gauche ou droit avant l’ouverture de la liste des chaînes ou du menu. Désactivé les ouvre immédiatement.',
   'settings.durationSeconds': {
     one: '{seconds} seconde',
     other: '{seconds} secondes',

@@ -404,6 +404,8 @@ export const PT_BR_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Reinicia após cada dígito. Ao terminar, sintoniza o número de canal inserido.',
   'settings.playerOsdTimeout': 'Atraso para ocultar os controles',
   'settings.playerOsdTimeoutHint': 'São ocultados automaticamente após esse período sem interação. Permanecem visíveis durante a pausa.',
+  'settings.pointerEdgeDelay': 'Atraso do ponteiro na borda',
+  'settings.pointerEdgeDelayHint': 'Durante a reprodução, por quanto tempo o ponteiro deve ficar na borda esquerda ou direita antes de abrir a lista de canais ou o menu. Desativado os abre na hora.',
   'settings.durationSeconds': {
     one: '{seconds} segundo',
     other: '{seconds} segundos',

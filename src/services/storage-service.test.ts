@@ -5,6 +5,7 @@ import {
   NUMBER_ENTRY_OSD_TIMEOUT_MS_OPTIONS,
   LIVE_RECONNECT_ATTEMPT_OPTIONS,
   PLAYER_OSD_TIMEOUT_MS_OPTIONS,
+  POINTER_EDGE_DELAY_MS_OPTIONS,
   REFRESH_INTERVAL_HOUR_OPTIONS,
   StorageService,
   XTREAM_CATALOG_REFRESH_HOUR_OPTIONS,
@@ -65,6 +66,18 @@ describe('StorageService', () => {
       .toBe(CONFIG.PLAYER.DEFAULT_NUMBER_ENTRY_OSD_TIMEOUT_MS);
     expect(StorageService.getPlayerOsdTimeoutMs())
       .toBe(CONFIG.PLAYER.DEFAULT_PLAYER_OSD_TIMEOUT_MS);
+  });
+
+  it('validates and persists the pointer edge delay', () => {
+    expect(StorageService.getPointerEdgeDelayMs()).toBe(0);
+    for (const delay of POINTER_EDGE_DELAY_MS_OPTIONS) {
+      StorageService.setPointerEdgeDelayMs(delay);
+      expect(StorageService.getPointerEdgeDelayMs()).toBe(delay);
+    }
+    expect(() => StorageService.setPointerEdgeDelayMs(700)).toThrow(RangeError);
+    expect(() => StorageService.setPointerEdgeDelayMs(NaN)).toThrow(RangeError);
+    StorageService.set('pointer_edge_delay_ms', '500');
+    expect(StorageService.getPointerEdgeDelayMs()).toBe(0);
   });
 
   it('validates and persists playlist and guide refresh intervals', () => {

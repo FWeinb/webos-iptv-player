@@ -7,6 +7,7 @@ import {
   NUMBER_ENTRY_OSD_TIMEOUT_MS_OPTIONS,
   LIVE_RECONNECT_ATTEMPT_OPTIONS,
   PLAYER_OSD_TIMEOUT_MS_OPTIONS,
+  POINTER_EDGE_DELAY_MS_OPTIONS,
   REFRESH_INTERVAL_HOUR_OPTIONS,
   StorageService,
   XTREAM_CATALOG_REFRESH_HOUR_OPTIONS,
@@ -810,6 +811,7 @@ export class Settings {
     const mergeAudioVariants = StorageService.getMergeAudioVariants();
     const numberEntryOsdTimeoutMs = StorageService.getNumberEntryOsdTimeoutMs();
     const playerOsdTimeoutMs = StorageService.getPlayerOsdTimeoutMs();
+    const pointerEdgeDelayMs = StorageService.getPointerEdgeDelayMs();
     const animationMode = StorageService.getAnimationMode();
     const playlistRefreshHours = StorageService.getPlaylistRefreshIntervalHours();
     const epgRefreshHours = StorageService.getEpgRefreshIntervalHours();
@@ -1179,6 +1181,22 @@ export class Settings {
                       'player-osd-timeout',
                       timeoutOptions(PLAYER_OSD_TIMEOUT_MS_OPTIONS),
                       String(playerOsdTimeoutMs),
+                    )}
+                    </div>
+                  </div>
+                  <div class="settings-advanced-row">
+                    <div class="settings-advanced-group" aria-hidden="true"></div>
+                    <div class="settings-advanced-description">
+                      <div class="settings-item-title">${t('settings.pointerEdgeDelay')}</div>
+                      <div class="settings-item-hint">${t('settings.pointerEdgeDelayHint')}</div>
+                    </div>
+                    <div class="settings-advanced-control">
+                    ${dropdown(
+                      'pointer-edge-delay',
+                      POINTER_EDGE_DELAY_MS_OPTIONS.map(value => value === 0
+                        ? { value: '0', label: t('common.off') }
+                        : timeoutOptions([value])[0]),
+                      String(pointerEdgeDelayMs),
                     )}
                     </div>
                   </div>
@@ -2957,6 +2975,11 @@ export class Settings {
       ($('#player-osd-timeout', this.container) as HTMLElement | null)?.dataset.value,
     );
     StorageService.setPlayerOsdTimeoutMs(playerOsdTimeoutMs);
+
+    const pointerEdgeDelayMs = Number(
+      ($('#pointer-edge-delay', this.container) as HTMLElement | null)?.dataset.value,
+    );
+    StorageService.setPointerEdgeDelayMs(pointerEdgeDelayMs);
 
     const animationMode = $('#animation-mode .toggle-option.active', this.container)
       ?.dataset.value as AnimationMode | undefined;

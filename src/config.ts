@@ -59,6 +59,7 @@ export const CONFIG = {
     LIVE_PREVIEW_UPCOMING_COUNT: 4,
     LIVE_PREVIEW_REFRESH_MS: 1000,
     DEFAULT_PLAYER_OSD_TIMEOUT_MS: 5000,
+    DEFAULT_POINTER_EDGE_DELAY_MS: 0, // the edge panels open on the first pointer move
     BUFFER_LENGTH: 30,
     MANIFEST_TIMEOUT: 5000,
     // Streams remembered per session as offering no variant choice, so a

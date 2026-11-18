@@ -402,6 +402,8 @@ export const IT_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Riparte dopo ogni cifra. Alla scadenza viene sintonizzato il numero di canale inserito.',
   'settings.playerOsdTimeout': 'Ritardo scomparsa controlli del lettore',
   'settings.playerOsdTimeoutHint': 'Si nascondono automaticamente dopo questo intervallo senza input. Restano visibili durante la pausa.',
+  'settings.pointerEdgeDelay': 'Ritardo del puntatore sul bordo',
+  'settings.pointerEdgeDelayHint': 'Durante la riproduzione, per quanto tempo il puntatore deve restare sul bordo sinistro o destro prima che si apra l’elenco canali o il menu. Disattivato li apre subito.',
   'settings.durationSeconds': {
     one: '{seconds} secondo',
     other: '{seconds} secondi',

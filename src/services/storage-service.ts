@@ -34,9 +34,11 @@ const PREFIX = CONFIG.STORAGE_PREFIX;
 export const LIVE_RECONNECT_ATTEMPT_OPTIONS: readonly number[] = [0, 1, 2, 3, 4, 5];
 export const NUMBER_ENTRY_OSD_TIMEOUT_MS_OPTIONS: readonly number[] = [1200, 1800, 2500, 3000, 3500];
 export const PLAYER_OSD_TIMEOUT_MS_OPTIONS: readonly number[] = [3000, 5000, 8000, 10000, 12000];
+export const POINTER_EDGE_DELAY_MS_OPTIONS: readonly number[] = [0, 500, 1000, 1200, 1800, 2500, 3000, 3500];
 export const REFRESH_INTERVAL_HOUR_OPTIONS: readonly number[] = [0, 1, 3, 6, 12, 24];
 export const XTREAM_CATALOG_REFRESH_HOUR_OPTIONS: readonly number[] = [1, 3, 6, 12, 24];
 const HOUR_MS = 60 * 60 * 1000;
+
 
 export type WatchlistToggleResult = 'added' | 'removed' | 'full';
 
@@ -775,6 +777,19 @@ export const StorageService = {
       throw new RangeError(`Invalid player OSD timeout: ${String(timeout)}`);
     }
     set('player_osd_timeout_ms', timeout);
+  },
+
+  getPointerEdgeDelayMs(): number {
+    const delay = get<unknown>('pointer_edge_delay_ms', CONFIG.PLAYER.DEFAULT_POINTER_EDGE_DELAY_MS);
+    return typeof delay === 'number' && POINTER_EDGE_DELAY_MS_OPTIONS.includes(delay)
+      ? delay
+      : CONFIG.PLAYER.DEFAULT_POINTER_EDGE_DELAY_MS;
+  },
+  setPointerEdgeDelayMs(delay: number): void {
+    if (!POINTER_EDGE_DELAY_MS_OPTIONS.includes(delay)) {
+      throw new RangeError(`Invalid pointer edge delay: ${String(delay)}`);
+    }
+    set('pointer_edge_delay_ms', delay);
   },
 
   getPlaylistRefreshIntervalHours(): number {

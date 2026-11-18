@@ -404,6 +404,8 @@ export const DE_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Beginnt nach jeder Ziffer neu. Nach Ablauf wird zur eingegebenen Sendernummer gewechselt.',
   'settings.playerOsdTimeout': 'Ausblendverzögerung der Player-Steuerung',
   'settings.playerOsdTimeoutHint': 'Wird nach dieser Zeit ohne Eingabe automatisch ausgeblendet. Bei pausierter Wiedergabe bleibt sie sichtbar.',
+  'settings.pointerEdgeDelay': 'Zeigerverzögerung am Bildschirmrand',
+  'settings.pointerEdgeDelayHint': 'Legt fest, wie lange der Zeiger während der Wiedergabe am linken oder rechten Bildschirmrand verweilen muss, bis sich die Senderliste oder das Menü öffnet. Aus öffnet sie sofort.',
   'settings.durationSeconds': {
     one: '{seconds} Sekunde',
     other: '{seconds} Sekunden',

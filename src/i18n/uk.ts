@@ -414,6 +414,8 @@ export const UK_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Відлік починається знову після кожної цифри. Після завершення вмикається введений номер каналу.',
   'settings.playerOsdTimeout': 'Затримка приховування панелі керування',
   'settings.playerOsdTimeoutHint': 'Автоматично приховується після цього періоду без дій. Під час паузи залишається видимою.',
+  'settings.pointerEdgeDelay': 'Затримка вказівника біля краю екрана',
+  'settings.pointerEdgeDelayHint': 'Під час відтворення: скільки вказівник має перебувати біля лівого чи правого краю, перш ніж відкриється список каналів або меню. Якщо вимкнено, вони відкриваються одразу.',
   'settings.durationSeconds': {
     one: '{seconds} секунда',
     few: '{seconds} секунди',

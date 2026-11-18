@@ -627,6 +627,94 @@ test('the pointer at the left edge opens the live channel sidebar', async ({ pag
   await expect(page.locator('#player-sidebar')).toHaveClass(/visible/);
 });
 
+async function gotoDelayedEdgePlayer(page: Page): Promise<void> {
+  await page.addInitScript(() => localStorage.setItem('iptv_pointer_edge_delay_ms', '1000'));
+  await gotoLivePlayer(page);
+  await seedPointer(page);
+}
+
+test('with a pointer edge delay, an edge panel opens only once the pointer rests there', async ({ page }) => {
+  await gotoDelayedEdgePlayer(page);
+  const sidebar = page.locator('#player-sidebar');
+  const menu = page.locator('#player-menu');
+
+  // Leaving the edge, a key, or the cursor hiding each cancels the wait
+  await page.mouse.move(20, 300);
+  await page.waitForTimeout(400);
+  await page.mouse.move(960, 300);
+  await page.waitForTimeout(1000);
+  await expect(sidebar).not.toHaveClass(/visible/);
+
+  await page.mouse.move(20, 310);
+  await page.waitForTimeout(400);
+  await page.keyboard.press('Shift');
+  await page.waitForTimeout(1000);
+  await expect(sidebar).not.toHaveClass(/visible/);
+
+  await page.mouse.move(960, 300);
+  await page.mouse.move(20, 320);
+  await page.waitForTimeout(400);
+  await page.evaluate(() => document.dispatchEvent(
+    new CustomEvent('cursorStateChange', { detail: { visibility: false } }),
+  ));
+  await page.waitForTimeout(1000);
+  await expect(sidebar).not.toHaveClass(/visible/);
+
+  // Moves within the zone keep the wait running rather than restarting it
+  await page.mouse.move(960, 300);
+  await page.mouse.move(20, 330);
+  await page.waitForTimeout(600);
+  await page.mouse.move(30, 340);
+  await expect(sidebar).not.toHaveClass(/visible/);
+  await expect(sidebar).toHaveClass(/visible/, { timeout: 700 });
+
+  await page.mouse.move(960, 300);
+  await expect(sidebar).not.toHaveClass(/visible/);
+  await page.mouse.move(1900, 300);
+  await page.waitForTimeout(300);
+  await expect(menu).not.toHaveClass(/visible/);
+  await expect(menu).toHaveClass(/visible/);
+});
+
+test('with a pointer edge delay, a panel that closed waits again before reopening', async ({ page }) => {
+  await gotoDelayedEdgePlayer(page);
+  const sidebar = page.locator('#player-sidebar');
+  await page.mouse.move(20, 300);
+  await expect(sidebar).toHaveClass(/visible/);
+  const box = (await sidebar.locator('[data-sidebar-pos]').nth(1).boundingBox())!;
+  const x = Math.min(box.x + 10, 70);
+  const y = box.y + box.height / 2;
+  await page.mouse.move(1200, y);
+  await expect(sidebar).not.toHaveClass(/visible/);
+
+  // Rest on a channel row inside the zone until the panel opens, then OK in
+  // place: tuning closes the panel with no pointer move
+  await page.mouse.move(x, y);
+  await expect(sidebar).toHaveClass(/visible/);
+  await page.waitForTimeout(400); // let the panel settle under the pointer
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(sidebar).not.toHaveClass(/visible/);
+
+  await page.mouse.move(x, y + 5);
+  await page.waitForTimeout(300);
+  await expect(sidebar).not.toHaveClass(/visible/);
+  await expect(sidebar).toHaveClass(/visible/);
+});
+
+test('with a pointer edge delay, going to the background cancels the wait', async ({ page }) => {
+  await gotoDelayedEdgePlayer(page);
+  const sidebar = page.locator('#player-sidebar');
+  await page.mouse.move(20, 300);
+  await page.waitForTimeout(400);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForTimeout(1000);
+  await expect(sidebar).not.toHaveClass(/visible/);
+});
+
 test('the player menu reopens with one ring, on its first row', async ({ page }) => {
   await gotoLivePlayer(page);
   const menu = page.locator('#player-menu');

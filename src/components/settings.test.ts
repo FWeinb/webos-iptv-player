@@ -50,6 +50,7 @@ const {
     mergeAudioVariants: false,
     numberEntryOsdTimeoutMs: 1200,
     playerOsdTimeoutMs: 5000,
+    pointerEdgeDelayMs: 0,
     playlistRefreshHours: 6,
     epgRefreshHours: 6,
     xtreamCatalogRefreshHours: 6,
@@ -107,6 +108,7 @@ const {
       getMergeAudioVariants: vi.fn(() => state.mergeAudioVariants),
       getNumberEntryOsdTimeoutMs: vi.fn(() => state.numberEntryOsdTimeoutMs),
       getPlayerOsdTimeoutMs: vi.fn(() => state.playerOsdTimeoutMs),
+      getPointerEdgeDelayMs: vi.fn(() => state.pointerEdgeDelayMs),
       getPlaylistRefreshIntervalHours: vi.fn(() => state.playlistRefreshHours),
       getEpgRefreshIntervalHours: vi.fn(() => state.epgRefreshHours),
       getXtreamCatalogRefreshIntervalHours: vi.fn(
@@ -148,6 +150,9 @@ const {
       }),
       setNumberEntryOsdTimeoutMs: vi.fn((timeout: number) => {
         state.numberEntryOsdTimeoutMs = timeout;
+      }),
+      setPointerEdgeDelayMs: vi.fn((delay: number) => {
+        state.pointerEdgeDelayMs = delay;
       }),
       setPlayerOsdTimeoutMs: vi.fn((timeout: number) => {
         state.playerOsdTimeoutMs = timeout;
@@ -217,6 +222,7 @@ vi.mock('../services/storage-service', () => ({
   NUMBER_ENTRY_OSD_TIMEOUT_MS_OPTIONS: [1200, 1800, 2500, 3000, 3500],
   LIVE_RECONNECT_ATTEMPT_OPTIONS: [0, 1, 2, 3, 4, 5],
   PLAYER_OSD_TIMEOUT_MS_OPTIONS: [3000, 5000, 8000, 10000, 12000],
+  POINTER_EDGE_DELAY_MS_OPTIONS: [0, 500, 1000, 1200, 1800, 2500, 3000, 3500],
   REFRESH_INTERVAL_HOUR_OPTIONS: [0, 1, 3, 6, 12, 24],
   XTREAM_CATALOG_REFRESH_HOUR_OPTIONS: [1, 3, 6, 12, 24],
   StorageService: storageMock,
@@ -290,6 +296,7 @@ beforeEach(() => {
   state.videoQuality = 'auto';
   state.numberEntryOsdTimeoutMs = 1200;
   state.playerOsdTimeoutMs = 5000;
+  state.pointerEdgeDelayMs = 0;
   state.playlistRefreshHours = 6;
   state.epgRefreshHours = 6;
   state.xtreamCatalogRefreshHours = 6;
@@ -563,7 +570,7 @@ describe('Settings.render', () => {
     const advanced = container.querySelector('#settings-advanced')!;
     expect(advanced.querySelector('.settings-section-title')?.textContent).toBe('Advanced');
     const items = advanced.querySelectorAll('.settings-advanced-row');
-    expect(items).toHaveLength(8);
+    expect(items).toHaveLength(9);
     expect(Array.from(advanced.querySelectorAll('.settings-advanced-group'))
       .map(group => group.textContent?.trim())
       .filter(Boolean))
@@ -638,7 +645,7 @@ describe('Settings.render', () => {
     settings.render();
 
     expect(container.querySelectorAll('#settings-advanced .settings-advanced-row'))
-      .toHaveLength(9);
+      .toHaveLength(10);
     expect(container.querySelector('#xtream-catalog-refresh-interval')
       ?.getAttribute('data-value')).toBe('6');
     expect(Array.from(container.querySelectorAll<HTMLElement>(
@@ -662,6 +669,26 @@ describe('Settings.render', () => {
     click('#save-settings');
     expect(storageMock.setNumberEntryOsdTimeoutMs).toHaveBeenCalledWith(1800);
     expect(storageMock.setPlayerOsdTimeoutMs).toHaveBeenCalledWith(8000);
+  });
+
+  it('offers the pointer edge delay as a dropdown, Off first', () => {
+    state.pointerEdgeDelayMs = 1000;
+    settings.render();
+    const row = container.querySelector('#pointer-edge-delay')!.closest('.settings-advanced-row')!;
+    expect(row.querySelector('.settings-item-title')?.textContent).toBe('Pointer edge delay');
+    expect(container.querySelector('#pointer-edge-delay')?.getAttribute('data-value')).toBe('1000');
+    expect(Array.from(container.querySelectorAll<HTMLElement>(
+      '#pointer-edge-delay [data-dropdown-value]',
+    )).map(option => option.textContent))
+      .toEqual(['Off', '0.5 seconds', '1 second', '1.2 seconds', '1.8 seconds',
+        '2.5 seconds', '3 seconds', '3.5 seconds']);
+  });
+
+  it('persists the selected pointer edge delay', () => {
+    settings.render();
+    click('#pointer-edge-delay [data-dropdown-value="500"]');
+    click('#save-settings');
+    expect(storageMock.setPointerEdgeDelayMs).toHaveBeenCalledWith(500);
   });
 
   // Left moves within a line by measuring peers, and a collapsed control has no

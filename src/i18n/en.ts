@@ -406,6 +406,8 @@ export const EN_MESSAGES = {
   'settings.numberEntryOsdTimeoutHint': 'Restarts after each digit. When it expires, the entered channel number is tuned.',
   'settings.playerOsdTimeout': 'Player OSD auto-hide delay',
   'settings.playerOsdTimeoutHint': 'Automatically hides after this period without input. Remains visible while playback is paused.',
+  'settings.pointerEdgeDelay': 'Pointer edge delay',
+  'settings.pointerEdgeDelayHint': 'During playback, how long the pointer must rest at the left or right edge before the channel list or menu opens. Off opens them at once.',
   'settings.durationSeconds': {
     one: '{seconds} second',
     other: '{seconds} seconds',
